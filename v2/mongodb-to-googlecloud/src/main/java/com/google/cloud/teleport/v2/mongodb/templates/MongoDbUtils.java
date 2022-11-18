@@ -52,10 +52,14 @@ public class MongoDbUtils implements Serializable {
       Document document = getMongoDbDocument(uri, database, collection);
       document.forEach(
           (key, value) -> {
+            String columnType = "STRING";
+            if(!key.equals("date") || !key.equals("rank")){
+              columnType = getTableSchemaDataType(value.getClass().getName());
+            }
             bigquerySchemaFields.add(
                 new TableFieldSchema()
                     .setName(key)
-                    .setType(getTableSchemaDataType(value.getClass().getName())));
+                    .setType(columnType));
           });
     } else {
       bigquerySchemaFields.add(new TableFieldSchema().setName("id").setType("STRING"));
